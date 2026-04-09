@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/shared/brand-logo";
+
 export function Footer() {
   return (
     <footer className="border-t border-white/8 bg-black/30">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-14 md:grid-cols-[1.2fr_repeat(2,.7fr)]">
         <div className="space-y-4">
-          <div className="font-display text-2xl text-white">CardWise India</div>
+          <BrandLogo />
           <p className="max-w-sm text-sm text-white/60">
             A free premium discovery and comparison platform for Indian credit cards, built for better decisions and stronger product intelligence.
           </p>

@@ -109,7 +109,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             <div className="text-xs uppercase tracking-[0.22em] text-cyan-100/75">Support</div>
             <h2 className="mt-3 font-display text-2xl text-white sm:text-3xl">Need more about this? Contact support.</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-white/66 sm:text-base">
-              If you want help choosing the right credit card for your spending pattern, contact {" "}
+              If you want help choosing the right credit card for your spending pattern, contact{" "}
               <Link href={`mailto:${ebookSupportEmail}`} className="text-cyan-200 underline-offset-4 hover:underline">
                 {ebookSupportEmail}
               </Link>
