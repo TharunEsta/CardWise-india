@@ -39,3 +39,4 @@ Premium 3D credit card discovery and comparison platform for Indian users, built
 - Add proper shadcn/ui generated primitives if you want the full registry workflow
 - Validate issuer/card data on an editorial schedule before deployment
 "# CardWise-india" 
+"# CardWise-india" 
