@@ -1,0 +1,7 @@
+{
+  "/banks/page": "app/banks/page.js",
+  "/compare/page": "app/compare/page.js",
+  "/banks/[slug]/page": "app/banks/[slug]/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/card/[slug]/page": "app/card/[slug]/page.js"
+}
