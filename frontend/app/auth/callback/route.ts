@@ -2,19 +2,19 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-import { env } from "@/lib/env";
+import { env, supabasePublicKey } from "@/lib/env";
 import { isAdminEmail } from "@/lib/auth";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
 
-  if (!code || !env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!code || !env.NEXT_PUBLIC_SUPABASE_URL || !supabasePublicKey) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   const cookieStore = await cookies();
-  const supabase = createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  const supabase = createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, supabasePublicKey, {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet: Array<{ name: string; value: string; options?: Parameters<typeof cookieStore.set>[2] }>) => {

@@ -32,11 +32,25 @@ Premium 3D credit card discovery and comparison platform for Indian users, built
 ## Production notes
 
 - Replace the in-memory dataset in `lib/data.ts` with Supabase queries and admin mutations
-- Connect auth modal actions to Supabase Google OAuth
 - Replace the simple `middleware.ts` cookie guard with validated Supabase session and admin-role checks
 - Persist analytics events from PostHog client + `/api/events` into `user_events` and `search_logs`
 - Upload the free eBook PDF to Supabase Storage and store the active file URL in `ebooks`
 - Add proper shadcn/ui generated primitives if you want the full registry workflow
 - Validate issuer/card data on an editorial schedule before deployment
+
+## Google OAuth setup
+
+1. In Supabase, go to Authentication > Providers > Google and enable Google.
+2. In Google Cloud Console, create an OAuth client and add Supabase's callback URL from the provider setup screen.
+3. In Supabase Authentication URL settings, add these redirect URLs:
+   - `http://localhost:3000/auth/callback`
+   - `https://YOUR-VERCEL-DOMAIN.vercel.app/auth/callback`
+   - your production custom domain callback URL if you use one
+4. In Vercel, set:
+   - `NEXT_PUBLIC_APP_URL=https://YOUR-VERCEL-DOMAIN.vercel.app`
+   - `NEXT_PUBLIC_SUPABASE_URL=...`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...`
+   - `ADMIN_EMAILS=comma-separated-admin-emails`
+5. Redeploy after saving env vars so the login modal can start the real OAuth flow.
 "# CardWise-india" 
 "# CardWise-india" 

@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { useState } from "react";
 
 import { AuthModal } from "@/components/shared/auth-modal";
 import { Button } from "@/components/ui/button";
-import { getDemoUser, type DemoUser } from "@/lib/demo-auth";
-import { createClient } from "@/lib/supabase-client";
 import { trackEvent } from "@/lib/analytics";
+import { useAuthUser } from "@/lib/use-auth-user";
 
 export function EbookActions({
   sourcePage,
@@ -16,40 +14,11 @@ export function EbookActions({
   sourcePage: string;
   title: string;
 }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [demoUser, setDemoUser] = useState<DemoUser | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuthUser();
 
-  useEffect(() => {
-    const supabase = createClient();
-    if (!supabase) {
-      setDemoUser(getDemoUser());
-      const onChange = () => {
-        setDemoUser(getDemoUser());
-      };
-      window.addEventListener("cardwise-demo-auth-changed", onChange);
-      return () => window.removeEventListener("cardwise-demo-auth-changed", onChange);
-    }
-
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-    });
-
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const activeUser = user
-    ? { id: user.id, email: user.email ?? "user@cardwiseindia.com" }
-    : demoUser
-      ? { id: demoUser.id, email: demoUser.email }
-      : null;
+  const activeUser = user ? { id: user.id, email: user.email ?? "user@cardwiseindia.com" } : null;
 
   async function handleDownload() {
     if (!activeUser) {

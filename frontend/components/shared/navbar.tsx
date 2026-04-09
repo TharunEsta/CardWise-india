@@ -3,19 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
 
 import { AuthModal } from "@/components/shared/auth-modal";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { CommandSearch } from "@/components/shared/search-command";
 import { Button } from "@/components/ui/button";
-import { getDemoUser, type DemoUser } from "@/lib/demo-auth";
-import { createClient } from "@/lib/supabase-client";
+import { useAuthUser } from "@/lib/use-auth-user";
 
 export function Navbar() {
   const [showAdmin, setShowAdmin] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [demoUser, setDemoUser] = useState<DemoUser | null>(null);
+  const { user } = useAuthUser();
 
   useEffect(() => {
     const readAdminCookie = () => {
@@ -30,30 +27,7 @@ export function Navbar() {
     };
   }, []);
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    if (!supabase) {
-      const onChange = () => setDemoUser(getDemoUser());
-      onChange();
-      window.addEventListener("cardwise-demo-auth-changed", onChange);
-      return () => window.removeEventListener("cardwise-demo-auth-changed", onChange);
-    }
-
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-    });
-
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const isLoggedIn = Boolean(user ?? demoUser);
+  const isLoggedIn = Boolean(user);
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/8 bg-slate-950/40 backdrop-blur-xl">

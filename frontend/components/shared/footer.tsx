@@ -21,7 +21,7 @@ export function Footer() {
           <div className="text-white">Resources</div>
           <Link href="/guides/best-credit-cards-in-india-2026-complete-comparison-guide">eBook</Link>
           <Link href="/privacy-policy">Privacy Policy</Link>
-          <Link href="/terms">Terms</Link>
+          <Link href="/terms-and-conditions">Terms &amp; Conditions</Link>
         </div>
       </div>
     </footer>

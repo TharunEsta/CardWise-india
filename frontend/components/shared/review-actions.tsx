@@ -1,46 +1,19 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
+import { FormEvent, useState } from "react";
 import { MessageSquarePlus } from "lucide-react";
 
 import { AuthModal } from "@/components/shared/auth-modal";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getDemoUser, type DemoUser } from "@/lib/demo-auth";
 import { readFeedback, writeFeedback, type FeedbackEntry } from "@/lib/review-store";
-import { createClient } from "@/lib/supabase-client";
+import { useAuthUser } from "@/lib/use-auth-user";
 
 export function ReviewActions({ cardId, cardName }: { cardId: string; cardName: string }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [demoUser, setDemoUser] = useState<DemoUser | null>(null);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    const supabase = createClient();
-
-    if (!supabase) {
-      const onChange = () => setDemoUser(getDemoUser());
-      onChange();
-      window.addEventListener("cardwise-demo-auth-changed", onChange);
-      return () => window.removeEventListener("cardwise-demo-auth-changed", onChange);
-    }
-
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user ?? null);
-    });
-
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const activeEmail = user?.email ?? demoUser?.email ?? null;
+  const { user } = useAuthUser();
+  const activeEmail = user?.email ?? null;
   const canSubmit = message.trim().length >= 8 && Boolean(activeEmail);
 
   const resetForm = () => {
