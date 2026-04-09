@@ -42,7 +42,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               </div>
             </div>
             <div className="rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02))] p-5 sm:p-6">
-              <div className="text-xs uppercase tracking-[0.22em] text-white/45">What's inside</div>
+              <div className="text-xs uppercase tracking-[0.22em] text-white/45">What&apos;s inside</div>
               <div className="mt-4 grid gap-3 text-sm text-white/72">
                 {ebookSections.map((section) => (
                   <div key={section.heading} className="rounded-[18px] border border-white/10 bg-white/5 px-4 py-3">

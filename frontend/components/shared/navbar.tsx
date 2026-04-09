@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Search, Sparkles } from "lucide-react";
+import { Search } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 import { AuthModal } from "@/components/shared/auth-modal";
