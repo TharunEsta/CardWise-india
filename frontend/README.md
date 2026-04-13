@@ -26,7 +26,7 @@ Premium 3D credit card discovery and comparison platform for Indian users, built
 2. Copy `.env.example` to `.env.local`
 3. Fill in Supabase, PostHog, Resend, and admin email variables
 4. Run `npm run dev`
-5. Apply `supabase/schema.sql` in your Supabase SQL editor
+5. Apply `backend/schema.sql` in your Supabase SQL editor
 6. Run `npm run db:seed` to generate a seed snapshot file
 
 ## Production notes
@@ -50,6 +50,7 @@ Premium 3D credit card discovery and comparison platform for Indian users, built
    - `NEXT_PUBLIC_APP_URL=https://YOUR-VERCEL-DOMAIN.vercel.app`
    - `NEXT_PUBLIC_SUPABASE_URL=...`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...`
+   - `SUPABASE_SERVICE_ROLE_KEY=...`
    - `ADMIN_EMAILS=comma-separated-admin-emails`
 5. Redeploy after saving env vars so the login modal can start the real OAuth flow.
 "# CardWise-india" 
