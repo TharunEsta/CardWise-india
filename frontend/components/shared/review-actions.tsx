@@ -6,12 +6,13 @@ import { MessageSquarePlus } from "lucide-react";
 import { AuthModal } from "@/components/shared/auth-modal";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { readFeedback, writeFeedback, type FeedbackEntry } from "@/lib/review-store";
 import { useAuthUser } from "@/lib/use-auth-user";
 
-export function ReviewActions({ cardId, cardName }: { cardId: string; cardName: string }) {
+export function ReviewActions({ cardSlug, cardName }: { cardSlug: string; cardName: string }) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const { user } = useAuthUser();
   const activeEmail = user?.email ?? null;
   const canSubmit = message.trim().length >= 8 && Boolean(activeEmail);
@@ -21,21 +22,36 @@ export function ReviewActions({ cardId, cardName }: { cardId: string; cardName: 
     setMessage("");
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!canSubmit || !activeEmail) return;
 
-    const nextEntry: FeedbackEntry = {
-      id: `${cardId}-${Date.now()}`,
-      user: activeEmail,
-      kind: "comment",
-      message: message.trim(),
-      createdAt: new Date().toLocaleDateString("en-IN", { dateStyle: "medium" })
-    };
+    setSubmitting(true);
+    setStatus(null);
 
-    const nextEntries = [nextEntry, ...readFeedback(cardId)];
-    writeFeedback(cardId, nextEntries);
+    const response = await fetch("/api/comments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        cardSlug,
+        cardName,
+        message
+      })
+    });
+
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      setStatus(data?.message ?? "Unable to save your comment right now.");
+      setSubmitting(false);
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent("cardwise-comments-updated", { detail: { cardSlug } }));
     resetForm();
+    setStatus("Comment published.");
+    setSubmitting(false);
   };
 
   return (
@@ -58,6 +74,7 @@ export function ReviewActions({ cardId, cardName }: { cardId: string; cardName: 
         {activeEmail ? null : (
           <div className="text-sm text-white/50">Comments are available after login only.</div>
         )}
+        {status ? <div className="text-sm text-emerald-200/85">{status}</div> : null}
       </div>
       <Dialog open={open} onOpenChange={(nextOpen) => (!nextOpen ? resetForm() : setOpen(true))}>
         <DialogContent>
@@ -80,8 +97,8 @@ export function ReviewActions({ cardId, cardName }: { cardId: string; cardName: 
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="submit" disabled={!canSubmit}>
-                Publish
+              <Button type="submit" disabled={!canSubmit || submitting}>
+                {submitting ? "Publishing..." : "Publish"}
               </Button>
               <Button type="button" variant="secondary" onClick={resetForm}>
                 Cancel

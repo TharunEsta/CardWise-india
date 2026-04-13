@@ -52,7 +52,9 @@ export function CommandSearch({ children }: { children: React.ReactNode }) {
                   trackEvent("search_result_clicked", {
                     search_term: query,
                     result_clicked_type: item.type,
-                    result_clicked_id: item.id
+                    result_clicked_id: item.id,
+                    result_clicked_slug: item.href.split("/").filter(Boolean).at(-1),
+                    result_clicked_title: item.title
                   })
                 }
               >

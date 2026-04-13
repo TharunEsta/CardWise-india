@@ -90,6 +90,10 @@ create table if not exists public.saved_cards (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete cascade,
   card_id uuid references public.credit_cards(id) on delete cascade,
+  card_slug text,
+  card_name text,
+  bank_slug text,
+  bank_name text,
   created_at timestamptz default now()
 );
 
@@ -97,6 +101,8 @@ create table if not exists public.card_reviews (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete cascade,
   card_id uuid references public.credit_cards(id) on delete cascade,
+  card_slug text,
+  card_name text,
   rating integer check (rating between 1 and 5),
   review text,
   created_at timestamptz default now()
@@ -106,6 +112,8 @@ create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete cascade,
   card_id uuid references public.credit_cards(id) on delete cascade,
+  card_slug text,
+  card_name text,
   comment text,
   parent_id uuid references public.comments(id) on delete cascade,
   created_at timestamptz default now()
@@ -118,6 +126,8 @@ create table if not exists public.user_events (
   event_name text not null,
   bank_id uuid references public.banks(id) on delete set null,
   card_id uuid references public.credit_cards(id) on delete set null,
+  bank_slug text,
+  card_slug text,
   metadata jsonb default '{}'::jsonb,
   created_at timestamptz default now()
 );
@@ -126,6 +136,7 @@ create table if not exists public.downloads (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete cascade,
   ebook_name text not null,
+  ebook_slug text,
   downloaded_at timestamptz default now()
 );
 
@@ -133,6 +144,7 @@ create table if not exists public.ebook_email_logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete cascade,
   ebook_id uuid,
+  ebook_slug text,
   email text not null,
   sent_at timestamptz default now()
 );
@@ -144,6 +156,8 @@ create table if not exists public.search_logs (
   search_term text not null,
   result_clicked_type text,
   result_clicked_id text,
+  result_clicked_slug text,
+  result_clicked_title text,
   created_at timestamptz default now()
 );
 
@@ -153,6 +167,10 @@ create table if not exists public.leads (
   source_page text,
   card_id uuid references public.credit_cards(id) on delete set null,
   bank_id uuid references public.banks(id) on delete set null,
+  card_slug text,
+  card_name text,
+  bank_slug text,
+  bank_name text,
   intent_type text,
   status text default 'new',
   notes text,
@@ -191,3 +209,34 @@ for insert with check (auth.uid() = user_id or user_id is null);
 
 create policy "Users can insert own leads" on public.leads
 for insert with check (auth.uid() = user_id or user_id is null);
+
+alter table public.saved_cards add column if not exists card_slug text;
+alter table public.saved_cards add column if not exists card_name text;
+alter table public.saved_cards add column if not exists bank_slug text;
+alter table public.saved_cards add column if not exists bank_name text;
+
+alter table public.card_reviews add column if not exists card_slug text;
+alter table public.card_reviews add column if not exists card_name text;
+
+alter table public.comments add column if not exists card_slug text;
+alter table public.comments add column if not exists card_name text;
+
+alter table public.user_events add column if not exists bank_slug text;
+alter table public.user_events add column if not exists card_slug text;
+
+alter table public.downloads add column if not exists ebook_slug text;
+alter table public.ebook_email_logs add column if not exists ebook_slug text;
+
+alter table public.search_logs add column if not exists result_clicked_slug text;
+alter table public.search_logs add column if not exists result_clicked_title text;
+
+alter table public.leads add column if not exists card_slug text;
+alter table public.leads add column if not exists card_name text;
+alter table public.leads add column if not exists bank_slug text;
+alter table public.leads add column if not exists bank_name text;
+
+create unique index if not exists saved_cards_user_card_slug_idx on public.saved_cards (user_id, card_slug);
+create index if not exists comments_card_slug_idx on public.comments (card_slug, created_at desc);
+create index if not exists leads_user_created_idx on public.leads (user_id, created_at desc);
+create index if not exists user_events_user_created_idx on public.user_events (user_id, created_at desc);
+create index if not exists search_logs_term_created_idx on public.search_logs (search_term, created_at desc);

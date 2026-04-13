@@ -3,6 +3,7 @@
 import posthog from "posthog-js";
 
 import { env } from "@/lib/env";
+import { getClientSessionId } from "@/lib/client-session";
 
 let initialized = false;
 
@@ -27,4 +28,16 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
 
   initPostHog();
   posthog.capture(eventName, properties);
+
+  void fetch("/api/events", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      eventName,
+      properties,
+      sessionId: getClientSessionId()
+    })
+  }).catch(() => undefined);
 }

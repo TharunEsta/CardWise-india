@@ -1,6 +1,10 @@
-import { adminActivityFeed, adminOverviewStats } from "@/lib/admin";
+import { getAdminData } from "@/lib/admin-data";
 
-export default function AdminOverviewPage() {
+export default async function AdminOverviewPage() {
+  const data = await getAdminData();
+  const overviewStats = data?.overviewStats ?? [];
+  const recentActivity = data?.recentActivity ?? [];
+
   return (
     <div className="space-y-8">
       <div>
@@ -10,7 +14,7 @@ export default function AdminOverviewPage() {
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {adminOverviewStats.map(([label, value]) => (
+        {overviewStats.map(([label, value]) => (
           <div key={label} className="glass-panel rounded-[28px] p-6">
             <div className="text-sm text-white/40">{label}</div>
             <div className="mt-3 font-display text-3xl text-white">{value}</div>
@@ -21,7 +25,7 @@ export default function AdminOverviewPage() {
         <div className="glass-panel rounded-[28px] p-6">
           <h2 className="font-display text-3xl text-white">Recent activity feed</h2>
           <div className="mt-5 space-y-4 text-sm text-white/65">
-            {adminActivityFeed.map((item) => (
+            {recentActivity.map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 {item}
               </div>

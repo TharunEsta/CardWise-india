@@ -74,7 +74,7 @@ export default async function CardDetailPage({ params }: { params: Promise<{ slu
               <div>Welcome benefit: {card.welcomeBenefit}</div>
             </div>
             <div className="mt-5 grid gap-3">
-              <CardDetailActions cardName={card.name} />
+              <CardDetailActions cardSlug={card.slug} cardName={card.name} bankName={card.bankName} />
             </div>
           </div>
         </div>
@@ -201,9 +201,9 @@ export default async function CardDetailPage({ params }: { params: Promise<{ slu
             />
             <div className="mt-8 grid gap-6 lg:grid-cols-[.9fr_1.1fr]">
               <div className="glass-panel rounded-[28px] p-6">
-                <ReviewActions cardId={card.id} cardName={card.name} />
+                <ReviewActions cardSlug={card.slug} cardName={card.name} />
               </div>
-              <ReviewList cardId={card.id} />
+              <ReviewList cardSlug={card.slug} />
             </div>
           </div>
         </div>

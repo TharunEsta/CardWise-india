@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+import { ensureAppUser } from "@/lib/app-user";
 import { env, supabasePublicKey } from "@/lib/env";
 import { isAdminEmail } from "@/lib/auth";
 
@@ -30,6 +31,10 @@ export async function GET(request: Request) {
   const {
     data: { user }
   } = await supabase.auth.getUser();
+
+  if (user) {
+    await ensureAppUser(user);
+  }
 
   const response = NextResponse.redirect(new URL("/", request.url));
 

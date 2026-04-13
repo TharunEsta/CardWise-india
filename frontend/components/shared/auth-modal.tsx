@@ -70,7 +70,15 @@ export function AuthModal() {
     });
 
     if (error) {
-      setMessage(error.message);
+      const providerDisabled =
+        error.message.toLowerCase().includes("unsupported provider") ||
+        error.message.toLowerCase().includes("provider is not enabled");
+
+      setMessage(
+        providerDisabled
+          ? "Google sign-in is not enabled in Supabase yet. Enable Google under Supabase Authentication > Providers and add the auth callback URL."
+          : error.message
+      );
     }
   }
 

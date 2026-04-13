@@ -3,15 +3,36 @@
 import { useEffect, useState } from "react";
 import { MessageSquareText } from "lucide-react";
 
-import { readFeedback, subscribeFeedback, type FeedbackEntry } from "@/lib/review-store";
+type FeedbackEntry = {
+  id: string;
+  user: string;
+  kind: "comment";
+  message: string;
+  createdAt: string;
+};
 
-export function ReviewList({ cardId }: { cardId: string }) {
+export function ReviewList({ cardSlug }: { cardSlug: string }) {
   const [entries, setEntries] = useState<FeedbackEntry[]>([]);
 
   useEffect(() => {
-    setEntries(readFeedback(cardId));
-    return subscribeFeedback(cardId, setEntries);
-  }, [cardId]);
+    async function loadComments() {
+      const response = await fetch(`/api/comments?cardSlug=${encodeURIComponent(cardSlug)}`);
+      const data = await response.json().catch(() => null);
+      setEntries(data?.comments ?? []);
+    }
+
+    void loadComments();
+
+    const onRefresh = (event: Event) => {
+      const detail = (event as CustomEvent<{ cardSlug?: string }>).detail;
+      if (!detail?.cardSlug || detail.cardSlug === cardSlug) {
+        void loadComments();
+      }
+    };
+
+    window.addEventListener("cardwise-comments-updated", onRefresh);
+    return () => window.removeEventListener("cardwise-comments-updated", onRefresh);
+  }, [cardSlug]);
 
   if (!entries.length) {
     return (
@@ -34,7 +55,7 @@ export function ReviewList({ cardId }: { cardId: string }) {
                   {entry.kind}
                 </span>
               </div>
-              <div className="mt-1 text-xs text-white/45">{entry.createdAt}</div>
+              <div className="mt-1 text-xs text-white/45">{new Date(entry.createdAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</div>
             </div>
             <div className="flex items-center gap-2 text-sm text-cyan-100/70">
               <MessageSquareText className="h-4 w-4" />
